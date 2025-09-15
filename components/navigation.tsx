@@ -1,9 +1,10 @@
+// components/navigation.tsx
 "use client"
 
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ShoppingCart, Menu, X, Search } from "lucide-react"
+import { ShoppingCart, Menu, X, Search, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/lib/cart-context"
 import { motion, AnimatePresence } from "framer-motion"
@@ -26,9 +27,9 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">3D</span>
+              <span className="text-accent-foreground font-bold text-sm">V</span>
             </div>
-            <span className="font-bold text-xl text-foreground">Premium</span>
+            <span className="font-bold text-xl text-foreground">VERTEX</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -45,7 +46,7 @@ export function Navigation() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon" className="hidden sm:flex">
               <Search className="h-5 w-5" />
             </Button>
@@ -67,6 +68,13 @@ export function Navigation() {
               </AnimatePresence>
             </Button>
 
+            {/* Tombol Login/Akun untuk Desktop */}
+            <Link href="/auth/login" className="hidden md:flex">
+               <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+               </Button>
+            </Link>
+
             {/* Mobile menu button */}
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -74,26 +82,30 @@ export function Navigation() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        <div
-          className={cn(
-            "md:hidden transition-all duration-300 ease-in-out",
-            isMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0 overflow-hidden",
-          )}
-        >
-          <div className="py-4 space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block px-4 py-2 text-foreground hover:text-accent hover:bg-accent/10 rounded-lg transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Mobile Navigation Menu */}
+        <AnimatePresence>
+        {isMenuOpen && (
+            <motion.div
+              className="md:hidden"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <div className="py-4 space-y-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="block px-4 py-2 text-foreground hover:text-accent hover:bg-accent/10 rounded-lg transition-colors duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+        )}
+        </AnimatePresence>
       </div>
     </nav>
   )

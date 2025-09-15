@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -33,14 +32,9 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!acceptTerms) return
-
     setIsLoading(true)
-
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
-
     console.log("Registration attempt:", formData)
-
     setIsLoading(false)
   }
 
@@ -92,9 +86,9 @@ export default function RegisterPage() {
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">3D</span>
+                <span className="text-white font-bold text-sm">V</span>
               </div>
-              <span className="font-bold text-xl">Premium</span>
+              <span className="font-bold text-xl">VERTEX</span>
             </Link>
             <Link href="/" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               ← Kembali ke Beranda
@@ -108,10 +102,9 @@ export default function RegisterPage() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative z-10 flex flex-col justify-center px-12 py-16 text-white">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-              <h1 className="text-4xl font-bold mb-6">Bergabung dengan Premium 3D</h1>
+              <h1 className="text-4xl font-bold mb-6">Bergabung dengan Vertex</h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Dapatkan akses eksklusif ke koleksi produk 3D premium dan nikmati pengalaman berbelanja yang
-                revolusioner.
+                Dapatkan akses eksklusif ke koleksi premium dan nikmati pengalaman berbelanja yang revolusioner.
               </p>
 
               <div className="space-y-4 mb-8">
@@ -143,7 +136,7 @@ export default function RegisterPage() {
                   <span className="text-sm font-medium">4.9/5</span>
                 </div>
                 <p className="text-sm text-gray-300">
-                  "Platform e-commerce terbaik untuk produk 3D premium. Pengalaman AR yang luar biasa!"
+                  "Platform e-commerce terbaik untuk produk 3D. Pengalaman AR yang luar biasa!"
                 </p>
                 <p className="text-xs text-gray-400 mt-2">- Sarah, Jakarta</p>
               </div>
@@ -160,7 +153,7 @@ export default function RegisterPage() {
               className="text-center"
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Buat Akun Baru</h2>
-              <p className="text-gray-600">Bergabung dengan komunitas premium kami</p>
+              <p className="text-gray-600">Bergabung dengan komunitas kami</p>
             </motion.div>
 
             <motion.div

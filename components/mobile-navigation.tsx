@@ -34,9 +34,9 @@ export function MobileNavigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-7 h-7 bg-accent rounded-lg flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-xs">3D</span>
+              <span className="text-accent-foreground font-bold text-xs">V</span>
             </div>
-            <span className="font-bold text-lg text-foreground">Premium</span>
+            <span className="font-bold text-lg text-foreground">VERTEX</span>
           </Link>
 
           {/* Actions */}

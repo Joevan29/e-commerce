@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { GeistSans } from "geist/font/sans"
@@ -15,19 +17,20 @@ import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Premium 3D E-commerce - Experience the Future of Tech",
-  description: "Discover cutting-edge products with interactive 3D visualization and premium shopping experience",
-  generator: "v0.app",
-  keywords: ["3D", "e-commerce", "premium", "technology", "interactive"],
-  authors: [{ name: "Premium 3D" }],
+  title: "Vertex - The Apex of Design & Technology",
+  description: "Discover cutting-edge products with interactive 3D visualization and an unparalleled shopping experience.",
+  generator: "Next.js",
+  keywords: ["3D", "e-commerce", "vertex", "technology", "interactive", "collectibles"],
+  authors: [{ name: "Vertex" }],
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#8b5cf6",
+  themeColor: "#6366f1",
 }
+
 
 export default function RootLayout({
   children,

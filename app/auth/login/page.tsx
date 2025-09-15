@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -21,18 +20,12 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Here you would integrate with your authentication service
     console.log("Login attempt:", { email, password })
-
     setIsLoading(false)
   }
 
   const handleGoogleLogin = () => {
-    // Integrate with Google OAuth
     console.log("Google login")
   }
 
@@ -43,9 +36,9 @@ export default function LoginPage() {
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">3D</span>
+                <span className="text-white font-bold text-sm">V</span>
               </div>
-              <span className="font-bold text-xl">Premium</span>
+              <span className="font-bold text-xl">VERTEX</span>
             </Link>
             <Link href="/" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               ← Kembali ke Beranda
@@ -59,10 +52,9 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative z-10 flex flex-col justify-center px-12 py-16 text-white">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-              <h1 className="text-4xl font-bold mb-6">Selamat Datang Kembali di Premium 3D</h1>
+              <h1 className="text-4xl font-bold mb-6">Selamat Datang Kembali di Vertex</h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Akses koleksi eksklusif produk 3D premium dengan teknologi terdepan dan pengalaman berbelanja yang tak
-                terlupakan.
+                Akses koleksi eksklusif, teknologi terdepan, dan pengalaman berbelanja yang tak terlupakan.
               </p>
 
               <div className="space-y-4">

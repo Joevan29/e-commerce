@@ -1,19 +1,63 @@
-// components/navigation.tsx
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ShoppingCart, Menu, X, Search, User } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useCart } from "@/lib/cart-context"
+import { useState, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Menu, X } from "lucide-react"
+import { Canvas } from '@react-three/fiber'
+import { useGLTF, OrbitControls } from '@react-three/drei'
+
+function AnimatedLogoText() {
+  const [isHovered, setIsHovered] = useState(false);
+  const words = ["Vertex", "Vision", "Vortex", "Value"];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    if (isHovered) {
+      interval = setInterval(() => {
+        setIndex((prevIndex) => prevIndex + 1);
+      }, 150);
+      const timeout = setTimeout(() => {
+        if (interval) clearInterval(interval);
+        setIndex(0);
+      }, 600);
+      return () => {
+        if (interval) clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    } else {
+      setIndex(0);
+    }
+  }, [isHovered]);
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative h-full w-24 cursor-pointer flex items-center"
+    >
+      <AnimatePresence>
+        <motion.span
+          key={words[index % words.length]}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.15, ease: "easeInOut" }}
+          className="flex items-center text-xl font-bold tracking-tighter"
+        >
+          {words[index % words.length]}
+        </motion.span>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export function Navigation() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { state, dispatch } = useCart()
+  const [isOpen, setIsOpen] = useState(false)
+  const toggleMenu = () => setIsOpen(!isOpen)
 
-  const navItems = [
+  const navLinks = [
     { name: "Products", href: "/products" },
     { name: "Collections", href: "/collections" },
     { name: "Technology", href: "/technology" },
@@ -21,92 +65,45 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/20 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">V</span>
-            </div>
-            <span className="font-bold text-xl text-foreground">VERTEX</span>
-          </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          <a href="/" className="flex h-full items-center space-x-2">
+           <AnimatedLogoText />
+          </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-foreground hover:text-accent transition-colors duration-200 font-medium"
-              >
-                {item.name}
-              </Link>
+          <nav className="hidden md:flex items-center space-x-6">
+            {navLinks.map((link) => (
+              <a key={link.name} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                {link.name}
+              </a>
             ))}
-          </div>
+          </nav>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" className="hidden sm:flex">
-              <Search className="h-5 w-5" />
-            </Button>
-
-            <Button variant="ghost" size="icon" className="relative" onClick={() => dispatch({ type: "TOGGLE_CART" })}>
-              <ShoppingCart className="h-5 w-5" />
-              <AnimatePresence>
-                {state.itemCount > 0 && (
-                  <motion.span
-                    className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {state.itemCount}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Button>
-
-            {/* Tombol Login/Akun untuk Desktop */}
-            <Link href="/auth/login" className="hidden md:flex">
-               <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-               </Button>
-            </Link>
-
-            {/* Mobile menu button */}
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="sm">Log In</Button>
+            <Button size="sm">Sign Up</Button>
+            <button
+              onClick={toggleMenu}
+              className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
-
-        {/* Mobile Navigation Menu */}
-        <AnimatePresence>
-        {isMenuOpen && (
-            <motion.div
-              className="md:hidden"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <div className="py-4 space-y-2">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block px-4 py-2 text-foreground hover:text-accent hover:bg-accent/10 rounded-lg transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-        )}
-        </AnimatePresence>
       </div>
-    </nav>
+
+      {isOpen && (
+        <div className="md:hidden bg-background border-t">
+          <nav className="flex flex-col space-y-2 p-4">
+            {navLinks.map((link) => (
+              <a key={link.name} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2">
+                {link.name}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
+    </header>
   )
 }

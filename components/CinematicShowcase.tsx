@@ -1,121 +1,148 @@
-// components/CinematicShowcase.tsx
 "use client"
 
-import React, { Suspense, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, ContactShadows, OrbitControls } from '@react-three/drei'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { SceneLoader } from './SceneLoader'
-import * as THREE from 'three'
+import { useState, useEffect, Suspense, lazy } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"
+import { SceneLoader } from "./SceneLoader"
+const DroneScene = lazy(() => import("@/components/DroneScene").then(module => ({ default: module.DroneScene })));
+const HeadphoneScene = lazy(() => import("@/components/HeadphoneScene").then(module => ({ default: module.HeadphoneScene })));
+const KeyboardScene = lazy(() => import("@/components/KeyboardScene").then(module => ({ default: module.KeyboardScene })));
 
-// Impor model 3D Anda
-import { DroneModel } from './DroneScene'
-import { KeyboardModel } from './KeyboardScene'
-import { HeadphoneModel } from './HeadphoneScene'
-
-// Komponen 3D Scene Utama
-function SceneContent({ scrollYProgress }: { scrollYProgress: any }) {
-  const groupRef = useRef<THREE.Group>(null!)
-  
-  // Transisi opacity dan scale untuk setiap model
-  const droneOpacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 1, 0])
-  const droneScale = useTransform(scrollYProgress, [0, 0.25], [1, 0.8])
-
-  const keyboardOpacity = useTransform(scrollYProgress, [0.25, 0.4, 0.58], [0, 1, 0])
-  const keyboardScale = useTransform(scrollYProgress, [0.25, 0.58], [0.8, 1])
-
-  const headphoneOpacity = useTransform(scrollYProgress, [0.58, 0.73, 1], [0, 1, 1])
-  const headphoneScale = useTransform(scrollYProgress, [0.58, 1], [0.8, 1])
-
-  // MENAMBAHKAN GERAKAN OTOMATIS
-  useFrame((state, delta) => {
-    // Animasi kamera halus mengikuti kursor
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, state.pointer.x * 1.5, 0.05)
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, state.pointer.y * 0.5, 0.05)
-    state.camera.lookAt(0, 0, 0)
-
-    // Menambahkan rotasi pada grup yang sedang aktif
-    if (groupRef.current) {
-        if(scrollYProgress.get() < 0.33) {
-            groupRef.current.children[0].rotation.y += delta * 0.2;
-        } else if (scrollYProgress.get() < 0.66) {
-            groupRef.current.children[1].rotation.y += delta * 0.2;
-        } else {
-            groupRef.current.children[2].rotation.y += delta * 0.2;
-        }
-    }
-  })
-
-  return (
-    <group ref={groupRef}>
-      <motion.hgroup style={{ opacity: droneOpacity, scale: droneScale }}>
-        {/* PENYESUAIAN UKURAN */}
-        <DroneModel position={[0, -1, 0]} scale={2.5} />
-      </motion.hgroup>
-      <motion.hgroup style={{ opacity: keyboardOpacity, scale: keyboardScale }}>
-        {/* PENYESUAIAN UKURAN */}
-        <KeyboardModel position={[0, -1.2, 0]} scale={4.5} rotation={[-0.2, 0, 0]} />
-      </motion.hgroup>
-      <motion.hgroup style={{ opacity: headphoneOpacity, scale: headphoneScale }}>
-        {/* PENYESUAIAN UKURAN */}
-        <HeadphoneModel position={[0, -1, 0]} scale={2.5} />
-      </motion.hgroup>
-    </group>
-  )
+interface ShowcaseItem {
+  type: "component"
+  component: React.ComponentType<any>
+  title: string
+  description: string
 }
 
-// Komponen Teks Overlay (tidak berubah)
-const TextOverlay = ({ children, opacity }: { children: React.ReactNode, opacity: any }) => (
-  <motion.div
-    style={{ opacity }}
-    className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-8 pointer-events-none"
-  >
-    {children}
-  </motion.div>
-)
+const showcaseItems: ShowcaseItem[] = [
+  {
+    type: "component",
+    component: DroneScene,
+    title: "Revolutionary Drone Technology",
+    description: "Capture stunning aerial shots with our state-of-the-art drone.",
+  },
+  {
+    type: "component",
+    component: HeadphoneScene,
+    title: "Immersive Audio Experience",
+    description: "Feel every beat with our premium wireless headphones.",
+  },
+  {
+    type: "component",
+    component: KeyboardScene,
+    title: "Mechanical Keyboard Mastery",
+    description: "Type with precision and style.",
+  },
+]
 
 export function CinematicShowcase() {
-  const showcaseRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: showcaseRef,
-    offset: ["start start", "end end"],
-  })
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(true)
 
-  // Transisi opacity untuk Teks
-  const droneTextOpacity = useTransform(scrollYProgress, [0.05, 0.15, 0.25], [0, 1, 0])
-  const keyboardTextOpacity = useTransform(scrollYProgress, [0.38, 0.48, 0.58], [0, 1, 0])
-  const headphoneTextOpacity = useTransform(scrollYProgress, [0.71, 0.81, 0.91], [0, 1, 0])
+  useEffect(() => {
+    if (isPlaying) {
+      const timer = setTimeout(() => {
+        handleNext()
+      }, 10000) 
+      return () => clearTimeout(timer)
+    }
+  }, [currentIndex, isPlaying])
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % showcaseItems.length)
+  }
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? showcaseItems.length - 1 : prevIndex - 1
+    )
+  }
+
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying)
+  }
+
+  const currentItem = showcaseItems[currentIndex]
+  const CurrentScene = currentItem.component
+
+  const variants = {
+    enter: { opacity: 0, scale: 0.9 },
+    center: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.8, ease: [0.2, 1, 0.4, 1] },
+    },
+    exit: {
+      opacity: 0,
+      scale: 1.1,
+      transition: { duration: 0.5, ease: [1, 0, 0.8, 0] },
+    },
+  }
 
   return (
-    <div ref={showcaseRef} className="relative h-[300vh] w-full">
-      <div className="sticky top-0 h-screen w-full">
-        <Suspense fallback={<SceneLoader />}>
-          <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
-            {/* BACKGROUND SIMPLE & ELEGAN */}
-            <color attach="background" args={['#101010']} />
-            <ambientLight intensity={0.1} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <Environment preset="apartment" />
-            <ContactShadows rotation-x={Math.PI / 2} position={[0, -2, 0]} opacity={0.5} width={10} height={10} blur={1.5} far={4} />
-            
-            <SceneContent scrollYProgress={scrollYProgress} />
-            
-            <OrbitControls enableZoom={true} enablePan={false} minDistance={6} maxDistance={12} />
-          </Canvas>
-        </Suspense>
+    <div className="relative w-full h-screen flex items-center justify-center bg-black overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          className="absolute inset-0"
+        >
+          <Suspense fallback={<SceneLoader />}>
+            <CurrentScene />
+          </Suspense>
+        </motion.div>
+      </AnimatePresence>
 
-        {/* Lapisan Teks HTML */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <TextOverlay opacity={droneTextOpacity}>
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg">Engineered for the<br /><span className="text-accent">Perfect Shot</span></h2>
-          </TextOverlay>
-          <TextOverlay opacity={keyboardTextOpacity}>
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg">Designed for Feel,<br /><span className="text-accent">Built to Last</span></h2>
-          </TextOverlay>
-          <TextOverlay opacity={headphoneTextOpacity}>
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg">Immerse Yourself<br /><span className="text-accent">in Pure Sound</span></h2>
-          </TextOverlay>
-        </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
+
+      <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white z-10 max-w-lg">
+        <motion.h2
+          key={currentIndex + "title"}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="text-2xl md:text-3xl font-bold mb-1"
+        >
+          {currentItem.title}
+        </motion.h2>
+        <motion.p
+          key={currentIndex + "desc"}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          className="text-sm md:text-base"
+        >
+          {currentItem.description}
+        </motion.p>
+      </div>
+
+      <div className="absolute bottom-8 right-8 z-10 flex items-center space-x-2">
+        <Button size="icon" variant="outline" onClick={handlePrev} className="bg-transparent text-white hover:bg-white/20 hover:text-white">
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <Button size="icon" variant="outline" onClick={handlePlayPause} className="bg-transparent text-white hover:bg-white/20 hover:text-white">
+          {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+        </Button>
+        <Button size="icon" variant="outline" onClick={handleNext} className="bg-transparent text-white hover:bg-white/20 hover:text-white">
+          <ChevronRight className="h-6 w-6" />
+        </Button>
+      </div>
+
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex space-x-2">
+        {showcaseItems.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`h-2 w-2 rounded-full transition-colors ${
+              currentIndex === index ? "bg-white" : "bg-white/50"
+            }`}
+          />
+        ))}
       </div>
     </div>
   )

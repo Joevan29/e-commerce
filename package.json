@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
+    "@headlessui/react": "^2.2.8",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",

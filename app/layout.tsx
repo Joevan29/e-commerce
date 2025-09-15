@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
@@ -20,7 +20,12 @@ export const metadata: Metadata = {
   generator: "v0.app",
   keywords: ["3D", "e-commerce", "premium", "technology", "interactive"],
   authors: [{ name: "Premium 3D" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
   themeColor: "#8b5cf6",
 }
 

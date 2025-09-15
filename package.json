@@ -56,6 +56,7 @@
     "date-fns": "4.1.0",
     "embla-carousel-react": "latest",
     "framer-motion": "latest",
+    "framer-motion-3d": "^12.4.13",
     "geist": "latest",
     "input-otp": "latest",
     "lucide-react": "^0.454.0",
